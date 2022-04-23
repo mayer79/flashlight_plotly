@@ -28,9 +28,9 @@ set.seed(4933)
 
 There are different R packages devoted to model agnostic interpretability, [DALEX](https://cran.r-project.org/web/packages/DALEX/index.html) and [iml](https://cran.r-project.org/web/packages/iml/index.html) being among the best known. A couple of years ago, I programmed the alternative [flashlight](https://cran.r-project.org/web/packages/flashlight/index.html) for different reasons, such as:
 
-1. All explainers work with case weights
-2. Explainers can be combined to a multiexplainer
-3. Stratified calculation and plotting is possible
+1. All explainers work with case weights.
+2. Explainers can be combined to a multiexplainer.
+3. Stratified calculation is possible.
 
 Since almost all plots in flashlight are constructed with `ggplot`, it is super easy to turn them into interactive plotly objects: just add a simple `ggplotly()` to the end of the call.
 
@@ -53,8 +53,11 @@ prep <- house_prices %>%
     age = year - yr_built
   )
 
-x <- c("year", "age", "log_sqft_living", "log_sqft_lot", "bedrooms",
-       "bathrooms", "log_sqft_basement", "condition", "waterfront", "zipcode")
+x <- c(
+  "year", "age", "log_sqft_living", "log_sqft_lot", 
+  "bedrooms", "bathrooms", "log_sqft_basement", 
+  "condition", "waterfront", "zipcode"
+)
 
 y <- "log_price"
 
@@ -80,7 +83,7 @@ We fit two models:
 2. A random forest with 500 trees.
 
 ```{r}
-# Model fitting
+# Mixed-effects model
 fit_lmer <- lmer(
   update(reformulate(x, "log_price"), . ~ . - zipcode + (1 | zipcode)),
   data = train
@@ -120,7 +123,7 @@ fls <- multiflashlight(
 
 ### Model performance
 
-First, let's evaluate model RMSE and R-squared on the hold-out dataset. Here, the mixed-effects model performs a tiny little bit better than the random forest:
+Let's evaluate model RMSE and R-squared on the hold-out dataset. Here, the mixed-effects model performs a tiny little bit better than the random forest:
 
 ```{r}
 (light_performance(fls) %>%
